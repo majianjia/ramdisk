@@ -10,7 +10,7 @@ This example does:
 - Format it using elmFAT and mount it on root directory.
 - Then, create a few folders as mounting point for SD card or storage temporary caching files. 
 
-''''C
+```C
 /* Initialize the filesystem */
 int filesystem_init(void)
 {
@@ -48,5 +48,5 @@ int ramdisk_device_init(void)
 }
 INIT_DEVICE_EXPORT(ramdisk_device_init);
 
-''''
+```
 
