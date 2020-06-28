@@ -15,6 +15,15 @@
 #include "rtdevice.h"
 #include <drv_common.h>
 
+/* ramdisk */
+struct ramdisk_device
+{
+    struct rt_device                parent;     /**< RT-Thread device struct */
+    struct rt_device_blk_geometry   geometry;   /**< sector size, sector count */
 
+    uint8_t* disk;                              /**< ramdisk start address */
+    rt_size_t size;                             /**< size of the ramdisk */
+    uint8_t is_allocated;                       /**< whether the disk buffer is allocated by us or user*/
+};
 
 #endif /*__DRV_RAMDISK_H_ */

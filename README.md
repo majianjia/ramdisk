@@ -3,6 +3,19 @@ A ramdisk block device based on RT-Thread device driver framework.
 
 It works as a block device which allows to be format to most of the filesystems supported by RT-Thread. 
 
+这是一个基于 RTT block device 的 ramdisk 块设备。除了能被文件系统格式化，还能当一般的块设备来存储数据。
+
+## Usage
+
+Call to create a ramdisk block device.
+
+`ramdisk_init(char *name, rt_uint8_t* addr, rt_size_t block_size, rt_size_t num_block);` 
+
+name: device name.
+addr: the start address of the memory block. Can pass NULL to use stack memory.
+block_size: block size in byte.
+num_block: the number of blocks. 
+
 ## Examples
 
 This example does:
@@ -43,7 +56,7 @@ INIT_ENV_EXPORT(filesystem_init);
 
 int ramdisk_device_init(void)
 {
-   ramdisk_init("ramdisk0", NULL, 512, 512*4096);
+   ramdisk_init("ramdisk0", NULL, 512, 4096);
    return RT_EOK;
 }
 INIT_DEVICE_EXPORT(ramdisk_device_init);
