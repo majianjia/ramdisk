@@ -10,6 +10,7 @@
 
 #include "board.h"
 #include <string.h>
+#include "drv_ramdisk.h"
 
 //#define DRV_DEBUG
 
@@ -20,19 +21,6 @@
 #define DBG_LVL               DBG_INFO
 #endif /* DRV_DEBUG */
 #include <rtdbg.h>
-
-#define RAMDISK_ALLOCATED     (1)
-/* ramdisk */
-struct ramdisk_device
-{
-    struct rt_device                parent;     /**< RT-Thread device struct */
-    struct rt_device_blk_geometry   geometry;   /**< sector size, sector count */
-
-    uint8_t* disk;                              /**< ramdisk start address */
-    rt_size_t size;                             /**< size of the ramdisk */
-    uint8_t is_allocated;                       /**< whether the disk buffer is allocated by us or user*/
-};
-
 
 static rt_err_t  rt_ramdisk_init(rt_device_t dev);
 static rt_err_t  rt_ramdisk_open(rt_device_t dev, rt_uint16_t oflag);
@@ -112,12 +100,12 @@ static rt_err_t rt_ramdisk_control(rt_device_t dev, int cmd, void *args)
     return RT_EOK;
 }
 
-rt_err_t ramdisk_init(const char *dev_name, rt_uint8_t* disk_addr, rt_size_t block_size, rt_size_t disk_size)
+rt_err_t ramdisk_init(const char *dev_name, rt_uint8_t* disk_addr, rt_size_t block_size, rt_size_t num_block)
 {
     rt_err_t result = RT_EOK;
     struct ramdisk_device *ramdisk_dev;
 
-    RT_ASSERT(disk_size > block_size)
+    RT_ASSERT(num_block*block_size > 0)
 
     ramdisk_dev = rt_malloc(sizeof(struct ramdisk_device));
     if (ramdisk_dev == RT_NULL)
@@ -130,13 +118,13 @@ rt_err_t ramdisk_init(const char *dev_name, rt_uint8_t* disk_addr, rt_size_t blo
     /* allocate memory for disk if user hasn't done it */
     if(disk_addr == RT_NULL)
     {
-        disk_addr = rt_malloc(disk_size);
+        disk_addr = rt_malloc(num_block*block_size);
         if (disk_addr == RT_NULL)
         {
-            LOG_E("no memory for ramdisk %s, require %d bytes", dev_name, disk_size);
+            LOG_E("no memory for ramdisk %s, require %d bytes", dev_name, num_block*block_size);
             return -RT_ENOMEM;
         }
-        ramdisk_dev->is_allocated = RAMDISK_ALLOCATED;
+        ramdisk_dev->is_allocated = 1;
     }
 
     /* device type */
@@ -159,12 +147,12 @@ rt_err_t ramdisk_init(const char *dev_name, rt_uint8_t* disk_addr, rt_size_t blo
     ramdisk_dev->parent.tx_complete = RT_NULL;
 
     /* set up geometry */
-    ramdisk_dev->geometry.sector_count = disk_size/block_size;
+    ramdisk_dev->geometry.sector_count = num_block;
     ramdisk_dev->geometry.block_size = block_size;
     ramdisk_dev->geometry.bytes_per_sector = block_size;
 
     /* set up disk */
-    ramdisk_dev->size = disk_size;
+    ramdisk_dev->size = num_block*block_size;
     ramdisk_dev->disk = disk_addr;
 
     /* register ramdisk as a block device */
