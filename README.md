@@ -9,12 +9,19 @@ It works as a block device which allows to be format to most of the filesystems 
 
 Call to create a ramdisk block device.
 
+调用以下接口即可新建一个 ramdisk 设备，并注册到 RTT 的块设备链表。
+
 `ramdisk_init(char *name, rt_uint8_t* addr, rt_size_t block_size, rt_size_t num_block);` 
 
 name: device name.
+
 addr: the start address of the memory block. Can pass NULL to use stack memory.
+
 block_size: block size in byte.
+
 num_block: the number of blocks. 
+
+
 
 ## Examples
 
