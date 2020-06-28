@@ -1,9 +1,16 @@
-Import('rtconfig')
 from building import *
+Import('rtconfig')
 
-cwd = GetCurrentDir()
-path = [cwd]
-src = Split('*.c')
+src   = []
+cwd   = GetCurrentDir()
+
+if GetDepend('PKG_USING_RAMDISK'):
+    src += Glob('src/*.c')
+
+# add include path.
+path  = [cwd + '/inc']
+
+# add src and include to group.
 group = DefineGroup('ramdisk', src, depend = ['PKG_USING_RAMDISK'], CPPPATH = path)
 
 Return('group')
