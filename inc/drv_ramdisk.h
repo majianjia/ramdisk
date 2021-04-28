@@ -26,4 +26,6 @@ struct ramdisk_device
     uint8_t is_allocated;                       /**< whether the disk buffer is allocated by us or user*/
 };
 
+rt_err_t ramdisk_init(const char *dev_name, rt_uint8_t* disk_addr, rt_size_t block_size, rt_size_t num_block);
+
 #endif /*__DRV_RAMDISK_H_ */
