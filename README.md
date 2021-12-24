@@ -48,7 +48,7 @@ int filesystem_init(void)
             /* now you can create dir dynamically. */
             mkdir("/sd", 0x777);
             mkdir("/cache", 0x777);
-			mkdir("/download", 0x777);
+            mkdir("/download", 0x777);
         }
         else
         {
